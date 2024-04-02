@@ -1,4 +1,4 @@
-# Install script for directory: /home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture
+# Install script for directory: /home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

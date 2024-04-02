@@ -33,16 +33,16 @@
 #include "ArgusHelpers.h"
 #include "CommonOptions.h"
 
-#define STATUS_OK 0
-#define STATUS_INVALID_PARAMS 1
-#define STATUS_INVALID_SETTINGS 2
-#define STATUS_UNAVAILABLE 3
-#define STATUS_OUT_OF_MEMORY 4
-#define STATUS_UNIMPLEMENTED 5
-#define STATUS_TIMEOUT 6
-#define STATUS_CANCELLED 7
-#define STATUS_DISCONNECTED 8
-#define STATUS_END_OF_STREAM 9
+// #define STATUS_OK 0
+// #define STATUS_INVALID_PARAMS 1
+// #define STATUS_INVALID_SETTINGS 2
+// #define STATUS_UNAVAILABLE 3
+// #define STATUS_OUT_OF_MEMORY 4
+// #define STATUS_UNIMPLEMENTED 5
+// #define STATUS_TIMEOUT 6
+// #define STATUS_CANCELLED 7
+// #define STATUS_DISCONNECTED 8
+// #define STATUS_END_OF_STREAM 9
 
 #define NANOSECOND_MULTIPLIER 1000000
 #define TIME_DURATION 10
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
                 - status OPTIONAL pointer to return success/status of the call
 
         class Argus::CameraProvider
-            - Object providing the entry point to the libargus runtime. 
+            - Object providing the entry point to the libargus runtime.
             - It provides methods for querying the cameras in the system and for creating camera devices
     */
     Argus::Status cameraProviderStatus;
@@ -127,12 +127,11 @@ int main(int argc, char **argv)
     Argus::UniqueObj<Argus::CameraProvider> cameraProvider(Argus::CameraProvider::create(&cameraProviderStatus));
 
     // Assuming cameraProviderStatus is assigned a value somewhere before printing
-    
-    if(cameraProviderStatus == STATUS_OK )
+
+    if (cameraProviderStatus == Argus::STATUS_OK)
     {
-        printf("Camera ready\r\n");
+        printf("\n------------------------------------------Camera ready------------------------------------------\r\n");
     }
-    
 
     /*
         ICameraProvider
@@ -141,29 +140,29 @@ int main(int argc, char **argv)
                 - Reference lnk : https://docs.nvidia.com/jetson/l4t-multimedia/classArgus_1_1Interface.html
                 - Description
                     - By convention, every Interface subclass exposes a public static method called id()
-                    - It returns a unique InterfaceID for that interface 
+                    - It returns a unique InterfaceID for that interface
                         - Which is needed for the interface_cast<> template to work for that interface
                     - Must check out reference link for interface chart : https://docs.nvidia.com/jetson/l4t-multimedia/classArgus_1_1Interface.html
             - CameraProvider method reference link : https://docs.nvidia.com/jetson/l4t-multimedia/classArgus_1_1CameraProvider.html
 
-        Public Member Functions for ICameraProvider 
+        Public Member Functions for ICameraProvider
             - virtual const std::string & 	getVersion () const =0
                - Returns the version number of the libargus implementation. More...
-            
+
             - virtual const std::string & 	getVendor () const =0
                - Returns the vendor string for the libargus implementation. More...
-            
+
             - virtual bool 	supportsExtension (const ExtensionName &extension) const =0
                - Returns whether or not an extension is supported by this libargus implementation. More...
-               - Should return success/status of object 
+               - Should return success/status of object
                  - Refernece link to Status ENUMS : https://docs.nvidia.com/jetson/l4t-multimedia/namespaceArgus.html#a43dee5758547aaf78710c7c1fe122fe3
-            
+
             - virtual Status 	getCameraDevices (std::vector< CameraDevice * > *devices) const =0
                - Returns the list of camera devices that are exposed by the provider. More...
-            
+
             - virtual CaptureSession * 	createCaptureSession (CameraDevice *device, Status *status=NULL)=0
                - Creates and returns a new CaptureSession using the given device. More...
-            
+
             - virtual CaptureSession * 	createCaptureSession (const std::vector< CameraDevice * > &devices, Status *status=NULL)=0
                - Creates and returns a new CaptureSession using the given device(s). More...
     */
@@ -171,15 +170,29 @@ int main(int argc, char **argv)
         Argus::interface_cast<Argus::ICameraProvider>(cameraProvider);
     EXIT_IF_NULL(iCameraProvider, "Cannot get core camera provider interface");
     printf("Argus Version: %s\n", iCameraProvider->getVersion().c_str());
+    std::cout << iCameraProvider->id;
 
     // virtual Argus::Status Argus::ICameraProvider::getCameraDevices(std::vector<Argus::CameraDevice *> *devices) const
     std::vector<Argus::CameraDevice *> *devices_;
     std::cout << "iCameraProvider->getCameraDevices : " << iCameraProvider->getCameraDevices(devices_) << std::endl;
-    
+    // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     // Argus::CameraDevice *ArgusSamples::ArgusHelpers::getCameraDevice(Argus::CameraProvider *cameraProvider, uint32_t cameraDeviceIndex)
+    // Object representing a single camera device. CameraDevices are provided by a CameraProvider and are used to access the camera devices available within the system. Each device is based on a single sensor or a set of synchronized sensors.
+
+    /*
+        CameraDevice
+            - Reference link : https://docs.nvidia.com/jetson/l4t-multimedia/group__ArgusCameraDevice.html
+            - Object representing single camera device
+            - CameraDevices provided by 'CameraProvider'
+                - Used to access camera devices available within system
+                - Each device based on
+                    - Single sensor
+                    - Set of synchronized sensors
+    */
     Argus::CameraDevice *device = ArgusSamples::ArgusHelpers::getCameraDevice(
         cameraProvider.get(), options.cameraDeviceIndex());
+
     Argus::ICameraProperties *iCameraProperties =
         Argus::interface_cast<Argus::ICameraProperties>(device);
     if (!iCameraProperties)
@@ -187,9 +200,22 @@ int main(int argc, char **argv)
         REPORT_ERROR("Failed to get ICameraProperties interface");
         return EXIT_FAILURE;
     }
+    else
+    {
+        std::cout << "cameraProvider.get() : " << cameraProvider.get() << std::endl;
+        std::cout << "options.cameraDeviceIndex() : " << options.cameraDeviceIndex() << std::endl;
+    }
+
+    // Argus::SensorMode *sensorMode = ArgusSamples::ArgusHelpers::getSensorMode(
+    //     device, options.sensorModeIndex());
+
+    const uint32_t sensorModeIndex = 1; // Change this to the desired sensor mode index
 
     Argus::SensorMode *sensorMode = ArgusSamples::ArgusHelpers::getSensorMode(
-        device, options.sensorModeIndex());
+        device, sensorModeIndex);
+
+    // Argus::SensorMode *sensorMode = ArgusSamples::ArgusHelpers::getSensorMode(
+    //     device, 1);
 
     printf("Sensor mode index: %u\n", options.sensorModeIndex());
     Argus::ISensorMode *iSensorMode =
@@ -208,6 +234,9 @@ int main(int argc, char **argv)
     Argus::UniqueObj<Argus::CaptureSession> captureSession(
         iCameraProvider->createCaptureSession(device, &status));
     EXIT_IF_NOT_OK(status, "Failed to create capture session");
+
+    if (status == Argus::STATUS_OK)
+        printf("Captured session created\r\n");
 
     Argus::ICaptureSession *iSession =
         Argus::interface_cast<Argus::ICaptureSession>(captureSession);

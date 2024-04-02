@@ -44,7 +44,8 @@
 #include <fstream>
 
 #include <opencv2/opencv.hpp>
-// Test
+#include <cstdlib>
+
 using namespace Argus;
 using namespace EGLStream;
 
@@ -98,6 +99,7 @@ namespace ArgusSamples
         OutputStream *m_stream;
         UniqueObj<FrameConsumer> m_consumer;
         int m_dmabuf;
+        cv::Mat opencvFrame;
     };
 
     ConsumerThread::~ConsumerThread()
@@ -134,6 +136,23 @@ namespace ArgusSamples
             IFrame *iFrame = interface_cast<IFrame>(frame);
             if (!iFrame)
                 break;
+
+            /* Get the image data from iFrame */
+            EGLStream::Image *image = iFrame->getImage();
+            if (!image)
+                ORIGINATE_ERROR("Failed to get image from frame");
+
+            /* Get image properties */
+
+            // Size2D<uint32_t> size = image->getResolution();
+            // uint32_t width = size.width();
+            // uint32_t height = size.height();
+            // const uint8_t *imageData = static_cast<const uint8_t *>(image->map());
+            // if (!imageData)
+            //     ORIGINATE_ERROR("Failed to map image data");
+
+            // /* Create a cv::Mat object using the image data */
+            // cv::Mat opencvFrame(height * 3 / 2, width, CV_8UC1, (void *)imageData);
 
             /* Get the IImageNativeBuffer extension interface. */
             NV::IImageNativeBuffer *iNativeBuffer =
@@ -322,7 +341,7 @@ namespace ArgusSamples
                 - The operation of a stream, the source for its buffers, and the interfaces it supports depend on the StreamType of the stream.
 
             Argus::UniqueObj< T > Class Template Reference
-                - Moveable smart pointer 
+                - Moveable smart pointer
                     - Mimicks std::unique_ptr
         */
         UniqueObj<OutputStream> captureStream;
@@ -361,15 +380,6 @@ namespace ArgusSamples
                 - If conversion not safe
                     - It'll return a nullptr
                     - Or throw a std::bad_cast
-                - interface_cast<> being used on 'cameraProvider' to get a pointer to the 'ICameraProvider' interface
-                - Why tho?
-                    - Ownership management
-                        - UniqueObj smart pointer OWNS the 'CameraProvider' object
-                        - To use functionality specific to the 'ICameraProvider' interface like with the 'getCameraDevices()' function, you need to get a pointer to the 'ICameraProvider' interface
-                    - Interface Useage
-                        - In many object-oriented frameworks 
-                            - Objects expose functionality through interfaces vs concrete classes 
-                            - By getting the interface pointer 'ICameraProvider' you can access the methods/member functions defined in that interface regardless of the concrete type of the object
         */
         ICameraProvider *iCameraProvider = interface_cast<ICameraProvider>(cameraProvider);
         if (!iCameraProvider)
@@ -378,16 +388,13 @@ namespace ArgusSamples
         /* Get the camera devices */
         std::vector<CameraDevice *> cameraDevices;
         /*
-            virtual Argus::Status Argus::ICameraProvider::getCameraDevices(std::vector<Argus::CameraDevice *> *devices) const
-                - Returns the list of camera devices that are exposed by the provider. 
-                - This includes devices that may already be in use by active CaptureSessions, 
-                    - And it's the application's responsibility to check 
-                        - Device availability 
-                        - Or handle any errors returned when CaptureSession creation fails due to a device already being in use.
-                - Parameters:
-                    - devices – A vector that will be populated by the available devices.
-                - Returns:
-                    - success/status of the call.
+            getCameraDevices
+                - virtual Argus::Status Argus::ICameraProvider::getCameraDevices(std::vector<Argus::CameraDevice *> *devices) const
+                - Return list of camera devices exposed by provider
+                - Includes devices already in use by active CaptureSession
+                - Application responsibility
+                    - Check device availability
+                    - Handle errors returned when CaptureSession creation fails due to device already being used
         */
         // Pointer to ICameraProvider
         iCameraProvider->getCameraDevices(&cameraDevices);
@@ -461,8 +468,8 @@ namespace ArgusSamples
             Based on above streamSettings, create the preview stream, and capture stream if JPEG Encode is required
 
             class Argus::OutputStream
-                - Object representing an output stream capable of receiving image frames from a capture. 
-                - OutputStream objects are used as the destination for image frames output from capture requests. 
+                - Object representing an output stream capable of receiving image frames from a capture.
+                - OutputStream objects are used as the destination for image frames output from capture requests.
                     - In this case it should be previewStream as the object
                 - The operation of a stream, the source for its buffers, and the interfaces it supports depend on the StreamType of the stream.
 
@@ -491,37 +498,26 @@ namespace ArgusSamples
             captureStream = (UniqueObj<OutputStream>)iCaptureSession->createOutputStream(streamSettings.get());
         }
 
-        /* 
-            Launch the FrameConsumer thread to consume frames from the OutputStream 
+        /*
+            Launch the FrameConsumer thread to consume frames from the OutputStream
 
             NvEglRenderer *renderer
-                - Argus Producer thread: Opens the Argus camera driver, 
-                    - creates two OutputStreams to output to Preview Consumer and Capture Consumer respectively, 
+                - Argus Producer thread: Opens the Argus camera driver,
+                    - creates two OutputStreams to output to Preview Consumer and Capture Consumer respectively,
                     - Then performs repeating capture requests for CAPTURE_TIME seconds before closing the producer and Argus driver.
                 - Parameters:
                     - renderer – : render handler for camera preview
-            
+
             PreviewConsumerThread
                 - Read frames from the OutputStream and render it on display.
-            
+
         */
         PRODUCER_PRINT("Launching consumer thread\n");
-        /*
-            PreviewConsumerThread is a subclass of ConsumerThread
-                - Both previewStream and renderer gets passed
-                - PreviewConsumerThread is a subclass of ConsumerThread
-                    - The ConsumerThread constructor will be called and initialize some variables 
-                - previewConsumerThread.initialize() then gets called to set up frame consumers and other needed resources for processing frames
-                - previewConsumerThread.waitRunning() waits for consumer thread to connect to the stream
-                - Once consumer thread running and connected IT THEN ENTERS THE LOOP OF ConsumerThread::threadExecute to acquire frames from the stream and process them
-                    - Loop keeps running until consumer thread is requested to shutdown 
-                    - Typically through requestShutdown()
-        */
         PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
         PROPAGATE_ERROR(previewConsumerThread.initialize());
         if (DO_JPEG_ENCODE)
         {
-            captureConsumerThread = new CaptureConsumerThread(captureStream.get());
+            captureConsumerThread = new ArgusSamples::CaptureConsumerThread(captureStream.get());
             PROPAGATE_ERROR(captureConsumerThread->initialize());
         }
 
@@ -609,114 +605,181 @@ namespace ArgusSamples
 
 }; /* namespace ArgusSamples */
 
-static void printHelp()
+int main()
 {
-    printf("Usage: camera_jpeg_capture [OPTIONS]\n"
-           "Options:\n"
-           "  --pre-res     Preview resolution WxH [Default 640x480]\n"
-           "  --img-res     Capture resolution WxH [Default 1920x1080]\n"
-           "  --cap-time    Capture time in sec    [Default 1]\n"
-           "  --fps         Frame per second       [Default 30]\n"
-           "  --sensor-mode Sensor mode            [Default 0]\n"
-           "  --disable-jpg Disable JPEG encode    [Default Enable]\n"
-           "  -s            Enable profiling\n"
-           "  -v            Enable verbose message\n"
-           "  -h            Print this help\n");
-}
-
-static bool parseCmdline(int argc, char *argv[])
-{
-    enum
+    if (setenv("DISPLAY", ":0", 1) != 0)
     {
-        OPTION_PREVIEW_RESOLUTION = 0x100,
-        OPTION_CAPTURE_RESOLUTION,
-        OPTION_CAPTURE_TIME,
-        OPTION_FPS,
-        OPTION_SENSOR_MODE,
-        OPTION_DISABLE_JPEG_ENCODE,
-    };
-
-    static struct option longOptions[] =
-        {
-            {"pre-res", 1, NULL, OPTION_PREVIEW_RESOLUTION},
-            {"img-res", 1, NULL, OPTION_CAPTURE_RESOLUTION},
-            {"cap-time", 1, NULL, OPTION_CAPTURE_TIME},
-            {"fps", 1, NULL, OPTION_FPS},
-            {"sensor-mode", 1, NULL, OPTION_SENSOR_MODE},
-            {"disable-jpg", 0, NULL, OPTION_DISABLE_JPEG_ENCODE},
-            {0},
-        };
-
-    int c, w, h;
-    uint32_t t;
-    while ((c = getopt_long(argc, argv, "s::v::h", longOptions, NULL)) != -1)
-    {
-        switch (c)
-        {
-        case OPTION_PREVIEW_RESOLUTION:
-            if (sscanf(optarg, "%dx%d", &w, &h) != 2)
-                return false;
-            PREVIEW_SIZE.width() = w;
-            PREVIEW_SIZE.height() = h;
-            break;
-        case OPTION_CAPTURE_RESOLUTION:
-            if (sscanf(optarg, "%dx%d", &w, &h) != 2)
-                return false;
-            CAPTURE_SIZE.width() = w;
-            CAPTURE_SIZE.height() = h;
-            break;
-        case OPTION_CAPTURE_TIME:
-            if (sscanf(optarg, "%d", &t) != 1)
-                return false;
-            CAPTURE_TIME = t;
-            break;
-        case OPTION_FPS:
-            if (sscanf(optarg, "%d", &w) != 1)
-                return false;
-            CAPTURE_FPS = w;
-            break;
-        case OPTION_SENSOR_MODE:
-            if (sscanf(optarg, "%d", &t) != 1)
-                return false;
-            SENSOR_MODE = t;
-            break;
-        case OPTION_DISABLE_JPEG_ENCODE:
-            DO_JPEG_ENCODE = false;
-            break;
-        case 's':
-            DO_STAT = true;
-            break;
-        case 'v':
-            VERBOSE_ENABLE = true;
-            break;
-        default:
-            return false;
-        }
+        std::cerr << "COULDN'T SET DISPLAY VARIABLE TO 0 EXITING PROGRAM NOW..." << std::endl;
+        return 1;
     }
-    return true;
-}
-
-int main(int argc, char *argv[])
-{
-    if (!parseCmdline(argc, argv))
+    else
     {
-        printHelp();
-        return EXIT_FAILURE;
+        printf("Program started\r\n");
     }
 
+    // Make sure to set 'export DISPLAY=:0' or you'll throw a fault and not be able to run the program
     NvEglRenderer *renderer = NvEglRenderer::createEglRenderer("renderer0", PREVIEW_SIZE.width(),
                                                                PREVIEW_SIZE.height(), 0, 0);
     if (!renderer)
         ORIGINATE_ERROR("Failed to create EGLRenderer.");
+    else
+        printf("EGLRenderer created successful\r\n");
 
-    /*
-        Actually does stuff
+    // Create object representing output stream to receive image frames
+    UniqueObj<OutputStream> captureStream;
+    ArgusSamples::CaptureConsumerThread *captureConsumerThread = NULL;
 
-    */
-    if (!ArgusSamples::execute(renderer))
-        return EXIT_FAILURE;
+    // Create CameraProvider Object to get core interface to control camera
+    // UniqueObj == Smart pointer
+    // Don't place breakpoint before this or the debugger will freeze up
+    UniqueObj<CameraProvider> cameraProvider = UniqueObj<CameraProvider>(CameraProvider::create());
 
-    delete renderer;
+    // Use interface_cast<> on cameraProvider to get/use pointer with 'ICameraProvider' interface
+    ICameraProvider *iCameraProvider = interface_cast<ICameraProvider>(cameraProvider);
+    if (!iCameraProvider)
+        ORIGINATE_ERROR("Failed to create CameraProvider");
 
-    return EXIT_SUCCESS;
+    // Create vector to store the numbers the jetson detects
+    std::vector<CameraDevice *> cameraDevices;
+
+    //
+    iCameraProvider->getCameraDevices(&cameraDevices);
+    if (cameraDevices.size() == 0)
+        ORIGINATE_ERROR("No cameras available");
+    else
+    {
+        std::cout << "Number of cameras : " << cameraDevices.size() << std::endl;
+    }
+
+    // Use interface_cast<> again on cameraDevice[0] to get/use pointer with ICameraProperties
+    ICameraProperties *iCameraProperties = interface_cast<ICameraProperties>(cameraDevices[0]);
+    if (!iCameraProperties)
+        ORIGINATE_ERROR("Failed to get ICameraProperties interface");
+
+    // Create CaptureSession with first camera device and get core interface
+
+    UniqueObj<CaptureSession> captureSession(iCameraProvider->createCaptureSession(cameraDevices[0]));
+    ICaptureSession *iCaptureSession = interface_cast<ICaptureSession>(captureSession);
+    if (!iCaptureSession)
+        ORIGINATE_ERROR("Failed to get ICaptureSession interface");
+
+    /* Initiaialize the settings of output stream */
+    PRODUCER_PRINT("Creating output stream\n");
+
+    // Initiaialize the settings of output stream
+    UniqueObj<OutputStreamSettings> streamSettings(iCaptureSession->createOutputStreamSettings(STREAM_TYPE_EGL));
+    IEGLOutputStreamSettings *iEglStreamSettings = interface_cast<IEGLOutputStreamSettings>(streamSettings);
+    if (!iEglStreamSettings)
+        ORIGINATE_ERROR("Failed to get IEGLOutputStreamSettings interface");
+
+    iEglStreamSettings->setPixelFormat(PIXEL_FMT_YCbCr_420_888);
+    iEglStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
+    iEglStreamSettings->setResolution(PREVIEW_SIZE);
+
+    // Based on above streamSettings, create the preview stream, and capture stream if JPEG Encode is required
+    UniqueObj<OutputStream> previewStream(iCaptureSession->createOutputStream(streamSettings.get()));
+    if (DO_JPEG_ENCODE)
+    {
+        // static Size2D<uint32_t> CAPTURE_SIZE(1920, 1080);
+        iEglStreamSettings->setResolution(CAPTURE_SIZE);
+
+        /*
+            class Argus::OutputStream
+                - Object representing an output stream capable of receiving image frames from a capture.
+                - OutputStream objects are used as the destination for image frames output from capture requests.
+                - The operation of a stream, the source for its buffers, and the interfaces it supports depend on the StreamType of the stream.
+        */
+        captureStream = (UniqueObj<OutputStream>)iCaptureSession->createOutputStream(streamSettings.get());
+    }
+
+    PRODUCER_PRINT("Launching consumer thread\n");
+    // ArgusSamples::previewConsumerThread(previewStream.get(), renderer);
+    // Must declare namespace | The actual class | Then the object name
+    ArgusSamples::PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
+
+    PROPAGATE_ERROR(previewConsumerThread.initialize());
+    if (DO_JPEG_ENCODE)
+    {
+        captureConsumerThread = new ArgusSamples::CaptureConsumerThread(captureStream.get());
+        PROPAGATE_ERROR(captureConsumerThread->initialize());
+    }
+
+    /* Wait until the consumer thread is connected to the stream */
+    PROPAGATE_ERROR(previewConsumerThread.waitRunning());
+    if (DO_JPEG_ENCODE)
+        PROPAGATE_ERROR(captureConsumerThread->waitRunning());
+
+    /* Create capture request and enable its output stream */
+    UniqueObj<Request> request(iCaptureSession->createRequest());
+    IRequest *iRequest = interface_cast<IRequest>(request);
+    if (!iRequest)
+        ORIGINATE_ERROR("Failed to create Request");
+    iRequest->enableOutputStream(previewStream.get());
+    if (DO_JPEG_ENCODE)
+        iRequest->enableOutputStream(captureStream.get());
+
+    ISensorMode *iSensorMode;
+    std::vector<SensorMode *> sensorModes;
+    iCameraProperties->getBasicSensorModes(&sensorModes);
+    if (sensorModes.size() == 0)
+        ORIGINATE_ERROR("Failed to get sensor modes");
+
+    PRODUCER_PRINT("Available Sensor modes :\n");
+    for (uint32_t i = 0; i < sensorModes.size(); i++)
+    {
+        iSensorMode = interface_cast<ISensorMode>(sensorModes[i]);
+        Size2D<uint32_t> resolution = iSensorMode->getResolution();
+        PRODUCER_PRINT("[%u] W=%u H=%u\n", i, resolution.width(), resolution.height());
+    }
+
+    ISourceSettings *iSourceSettings = interface_cast<ISourceSettings>(iRequest->getSourceSettings());
+    if (!iSourceSettings)
+        ORIGINATE_ERROR("Failed to get ISourceSettings interface");
+
+    /* Check and set sensor mode */
+    if (SENSOR_MODE >= sensorModes.size())
+        ORIGINATE_ERROR("Sensor mode index is out of range");
+    SensorMode *sensorMode = sensorModes[SENSOR_MODE];
+    iSensorMode = interface_cast<ISensorMode>(sensorMode);
+    iSourceSettings->setSensorMode(sensorMode);
+
+    /* Check fps */
+    Range<uint64_t> sensorDuration(iSensorMode->getFrameDurationRange());
+    Range<uint64_t> desireDuration(1e9 / CAPTURE_FPS + 0.9);
+    if (desireDuration.min() < sensorDuration.min() ||
+        desireDuration.max() > sensorDuration.max())
+    {
+        PRODUCER_PRINT("Requested FPS out of range. Fall back to 30\n");
+        CAPTURE_FPS = 30;
+    }
+    /* Set the fps */
+    iSourceSettings->setFrameDurationRange(Range<uint64_t>(1e9 / CAPTURE_FPS));
+    renderer->setFPS((float)CAPTURE_FPS);
+
+    /* Submit capture requests. */
+    PRODUCER_PRINT("Starting repeat capture requests.\n");
+    if (iCaptureSession->repeat(request.get()) != STATUS_OK)
+        ORIGINATE_ERROR("Failed to start repeat capture request");
+
+    /* Wait for CAPTURE_TIME seconds. */
+    sleep(CAPTURE_TIME);
+
+    /* Stop the repeating request and wait for idle. */
+    iCaptureSession->stopRepeat();
+    iCaptureSession->waitForIdle();
+
+    /* Destroy the output stream to end the consumer thread. */
+    previewStream.reset();
+    if (DO_JPEG_ENCODE)
+        captureStream.reset();
+
+    /* Wait for the consumer thread to complete. */
+    PROPAGATE_ERROR(previewConsumerThread.shutdown());
+    if (DO_JPEG_ENCODE)
+    {
+        PROPAGATE_ERROR(captureConsumerThread->shutdown());
+        delete captureConsumerThread;
+    }
+
+    return 0;
 }

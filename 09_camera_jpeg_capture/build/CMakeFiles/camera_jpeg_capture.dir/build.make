@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture"
+CMAKE_SOURCE_DIR = "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build"
+CMAKE_BINARY_DIR = "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build"
 
 # Include any dependencies generated for this target.
 include CMakeFiles/camera_jpeg_capture.dir/depend.make
@@ -59,7 +59,7 @@ include CMakeFiles/camera_jpeg_capture.dir/flags.make
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/ArgusHelpers.cpp.i: cmake_force
@@ -72,7 +72,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp.i: cmake_force
@@ -85,7 +85,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/CommonOptions.cpp.i: cmake_force
@@ -98,7 +98,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/EGLGlobal.cpp.i: cmake_force
@@ -111,7 +111,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/GLContext.cpp.i: cmake_force
@@ -124,7 +124,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/JPEGConsumer.cpp.i: cmake_force
@@ -137,7 +137,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/NativeBuffer.cpp.i: cmake_force
@@ -150,7 +150,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Observed.cpp.i: cmake_force
@@ -163,7 +163,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Options.cpp.i: cmake_force
@@ -176,7 +176,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/PreviewConsumer.cpp.i: cmake_force
@@ -189,7 +189,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/RectUtils.cpp.i: cmake_force
@@ -202,7 +202,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/Thread.cpp.i: cmake_force
@@ -215,7 +215,7 @@ CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/u
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp.o: CMakeFiles/camera_jpeg_capture.dir/flags.make
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp.o: /usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp.o -c /usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp
 
 CMakeFiles/camera_jpeg_capture.dir/usr/src/jetson_multimedia_api/argus/samples/utils/WindowBase.cpp.i: cmake_force
@@ -264,7 +264,7 @@ camera_jpeg_capture: /usr/lib/aarch64-linux-gnu/tegra/libnvargus_socketclient.so
 camera_jpeg_capture: /usr/lib/aarch64-linux-gnu/tegra/libnvbuf_utils.so.1.0.0
 camera_jpeg_capture: /usr/lib/aarch64-linux-gnu/libpthread.so
 camera_jpeg_capture: CMakeFiles/camera_jpeg_capture.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable camera_jpeg_capture"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable camera_jpeg_capture"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/camera_jpeg_capture.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -277,6 +277,6 @@ CMakeFiles/camera_jpeg_capture.dir/clean:
 .PHONY : CMakeFiles/camera_jpeg_capture.dir/clean
 
 CMakeFiles/camera_jpeg_capture.dir/depend:
-	cd "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture" "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture" "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build" "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build" "/home/ctnano/Desktop/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles/camera_jpeg_capture.dir/DependInfo.cmake" --color=$(COLOR)
+	cd "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture" "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture" "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build" "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build" "/home/ctnano/Desktop/Coding Folder/Argus Testing Folder/09_camera_jpeg_capture/build/CMakeFiles/camera_jpeg_capture.dir/DependInfo.cmake" --color=$(COLOR)
 .PHONY : CMakeFiles/camera_jpeg_capture.dir/depend
 

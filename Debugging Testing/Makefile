@@ -2,7 +2,7 @@
 include /usr/src/jetson_multimedia_api/samples/Rules.mk
 
 # Define the name of the application
-APP := captureJPEG
+APP := debuggingTesting
 
 # Define the directory where Argus utilities are located
 # TOP_DIR 	:= $(shell pwd | awk '{split($$0, f, "/samples"); print f[1]}')
@@ -35,6 +35,7 @@ CPPFLAGS += \
 
 # Add debugging flags
 CPPFLAGS += -g -O0 -std=c++11 -Wall    
+
 
 # Add additional linker flags
 LDFLAGS += \
