@@ -41,11 +41,12 @@ LDFLAGS += \
 	-lnveglstream_camconsumer -lnvargus_socketclient -lopencv_core -lopencv_imgproc -lopencv_highgui
 
 # Define the default target (the application)
-# all: $(APP)
+all: $(APP)
 
 # # Compile each class individually (this is a dependency target)
-# $(CLASS_DIR)/%.o: $(CLASS_DIR)/%.cpp
-# 	$(AT)$(MAKE) -C $(CLASS_DIR)
+# This is needed for some reason 5/25/24
+$(CLASS_DIR)/%.o: $(CLASS_DIR)/%.cpp
+	$(AT)$(MAKE) -C $(CLASS_DIR)
 
 # Compile each source file into an object file
 %.o: %.cpp

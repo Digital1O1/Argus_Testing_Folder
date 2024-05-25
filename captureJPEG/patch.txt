@@ -1,0 +1,161 @@
+diff --git a/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/Makefile b/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/Makefile
+index 829f741..4254266 100644
+--- a/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/Makefile
++++ b/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/Makefile
+@@ -47,6 +47,9 @@ CPPFLAGS += \
+ LDFLAGS += \
+ 	-lnveglstream_camconsumer -largus
+ 
++CPPFLAGS+=`pkg-config --cflags opencv`
++LDFLAGS+=`pkg-config --libs opencv`
++
+ all: $(APP)
+ 
+ $(CLASS_DIR)/%.o: $(CLASS_DIR)/%.cpp
+diff --git a/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/main.cpp b/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/main.cpp
+index 7d74f6e..f4c3d4d 100644
+--- a/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/main.cpp
++++ b/multimedia_api/ll_samples/samples/09_camera_jpeg_capture/main.cpp
+@@ -43,6 +43,8 @@
+ #include <iostream>
+ #include <fstream>
+ 
++#include <opencv2/opencv.hpp>
++
+ using namespace Argus;
+ using namespace EGLStream;
+ 
+@@ -142,8 +144,8 @@ bool ConsumerThread::threadExecute()
+         if (m_dmabuf == -1)
+         {
+             m_dmabuf = iNativeBuffer->createNvBuffer(iStream->getResolution(),
+-                                                     NvBufferColorFormat_YUV420,
+-                                                     NvBufferLayout_BlockLinear);
++                                                     NvBufferColorFormat_ABGR32,
++                                                     NvBufferLayout_Pitch);
+             if (m_dmabuf == -1)
+                 CONSUMER_PRINT("\tFailed to create NvBuffer\n");
+         }
+@@ -175,21 +177,17 @@ bool ConsumerThread::threadShutdown()
+ class PreviewConsumerThread : public ConsumerThread
+ {
+ public:
+-    PreviewConsumerThread(OutputStream *stream, NvEglRenderer *renderer);
++    PreviewConsumerThread(OutputStream *stream);
+     ~PreviewConsumerThread();
+ 
+ private:
+     bool threadInitialize();
+     bool threadShutdown();
+     bool processV4L2Fd(int32_t fd, uint64_t frameNumber);
+-
+-    NvEglRenderer *m_renderer;
+ };
+ 
+-PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream,
+-                                             NvEglRenderer *renderer) :
+-    ConsumerThread(stream),
+-    m_renderer(renderer)
++PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream) :
++    ConsumerThread(stream)
+ {
+ }
+ 
+@@ -202,23 +200,31 @@ bool PreviewConsumerThread::threadInitialize()
+     if (!ConsumerThread::threadInitialize())
+         return false;
+ 
+-    if (DO_STAT)
+-        m_renderer->enableProfiling();
+-
+     return true;
+ }
+ 
+ bool PreviewConsumerThread::threadShutdown()
+ {
+-    if (DO_STAT)
+-        m_renderer->printProfilingStats();
+-
+     return ConsumerThread::threadShutdown();
+ }
+ 
+ bool PreviewConsumerThread::processV4L2Fd(int32_t fd, uint64_t frameNumber)
+ {
+-    m_renderer->render(fd);
++    void *pdata = NULL;
++
++    NvBufferMemMap(fd, 0, NvBufferMem_Read, &pdata);
++    NvBufferMemSyncForCpu(fd, 0, &pdata);
++
++    cv::Mat imgbuf = cv::Mat(PREVIEW_SIZE.height(),
++                             PREVIEW_SIZE.width(),
++                             CV_8UC4, pdata);
++    cv::Mat display_img;
++    cvtColor(imgbuf, display_img, CV_RGBA2BGR);
++
++    NvBufferMemUnMap(fd, 0, &pdata);
++
++    cv::imshow("img", display_img);
++    cv::waitKey(1);
+     return true;
+ }
+ 
+@@ -298,7 +304,6 @@ bool CaptureConsumerThread::processV4L2Fd(int32_t fd, uint64_t frameNumber)
+         outputFile->write((char *)buffer, size);
+         delete outputFile;
+     }
+-
+     return true;
+ }
+ 
+@@ -309,7 +314,7 @@ bool CaptureConsumerThread::processV4L2Fd(int32_t fd, uint64_t frameNumber)
+  *   capture requests for CAPTURE_TIME seconds before closing the producer and
+  *   Argus driver.
+  ******************************************************************************/
+-static bool execute(NvEglRenderer *renderer)
++static bool execute()
+ {
+     UniqueObj<OutputStream> captureStream;
+     CaptureConsumerThread *captureConsumerThread = NULL;
+@@ -345,7 +350,6 @@ static bool execute(NvEglRenderer *renderer)
+         ORIGINATE_ERROR("Failed to get IOutputStreamSettings interface");
+ 
+     iStreamSettings->setPixelFormat(PIXEL_FMT_YCbCr_420_888);
+-    iStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
+     iStreamSettings->setResolution(PREVIEW_SIZE);
+     UniqueObj<OutputStream> previewStream(iCaptureSession->createOutputStream(streamSettings.get()));
+     if (DO_JPEG_ENCODE) {
+@@ -355,7 +359,7 @@ static bool execute(NvEglRenderer *renderer)
+ 
+     // Launch the FrameConsumer thread to consume frames from the OutputStream.
+     PRODUCER_PRINT("Launching consumer thread\n");
+-    PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
++    PreviewConsumerThread previewConsumerThread(previewStream.get());
+     PROPAGATE_ERROR(previewConsumerThread.initialize());
+     if (DO_JPEG_ENCODE) {
+         captureConsumerThread = new CaptureConsumerThread(captureStream.get());
+@@ -410,7 +414,6 @@ static bool execute(NvEglRenderer *renderer)
+         CAPTURE_FPS = 30;
+     }
+     iSourceSettings->setFrameDurationRange(Range<uint64_t>(1e9/CAPTURE_FPS));
+-    renderer->setFPS((float)CAPTURE_FPS);
+ 
+     // Submit capture requests.
+     PRODUCER_PRINT("Starting repeat capture requests.\n");
+@@ -538,15 +541,8 @@ int main(int argc, char * argv[])
+         return EXIT_FAILURE;
+     }
+ 
+-    NvEglRenderer *renderer = NvEglRenderer::createEglRenderer("renderer0", PREVIEW_SIZE.width(),
+-                                            PREVIEW_SIZE.height(), 0, 0);
+-    if (!renderer)
+-        ORIGINATE_ERROR("Failed to create EGLRenderer.");
+-
+-    if (!ArgusSamples::execute(renderer))
++    if (!ArgusSamples::execute())
+         return EXIT_FAILURE;
+ 
+-    delete renderer;
+-
+     return EXIT_SUCCESS;
+ }

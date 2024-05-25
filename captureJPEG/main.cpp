@@ -48,7 +48,6 @@
 
 using namespace Argus;
 using namespace EGLStream;
-
 /* Configurations below can be overrided by cmdline */
 static uint32_t CAPTURE_TIME = 1; /* In seconds. */
 static int CAPTURE_FPS = 30;
@@ -164,9 +163,11 @@ namespace ArgusSamples
                Otherwise, just blit to our buffer. */
             if (m_dmabuf == -1)
             {
+                // m_dmabuf = iNativeBuffer->createNvBuffer(iEglOutputStream->getResolution(),
+                //                                          NvBufferColorFormat_YUV420,
+                //                                          NvBufferLayout_BlockLinear);
                 m_dmabuf = iNativeBuffer->createNvBuffer(iEglOutputStream->getResolution(),
-                                                         NvBufferColorFormat_YUV420,
-                                                         NvBufferLayout_BlockLinear);
+                                                         NvBufferColorFormat_ABGR32, NvBufferLayout_Pitch);
                 if (m_dmabuf == -1)
                     CONSUMER_PRINT("\tFailed to create NvBuffer\n");
             }
@@ -198,7 +199,8 @@ namespace ArgusSamples
     class PreviewConsumerThread : public ConsumerThread
     {
     public:
-        PreviewConsumerThread(OutputStream *stream, NvEglRenderer *renderer);
+        // PreviewConsumerThread(OutputStream *stream, NvEglRenderer *renderer);
+        PreviewConsumerThread(OutputStream *stream);
         ~PreviewConsumerThread();
 
     private:
@@ -206,12 +208,13 @@ namespace ArgusSamples
         bool threadShutdown();
         bool processV4L2Fd(int32_t fd, uint64_t frameNumber);
 
-        NvEglRenderer *m_renderer;
+        // NvEglRenderer *m_renderer;
     };
 
-    PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream,
-                                                 NvEglRenderer *renderer) : ConsumerThread(stream),
-                                                                            m_renderer(renderer)
+    // PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream,
+    //                                              NvEglRenderer *renderer) : ConsumerThread(stream),
+    //                                                                         m_renderer(renderer)
+    PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream) : ConsumerThread(stream)
     {
     }
 
@@ -224,23 +227,35 @@ namespace ArgusSamples
         if (!ConsumerThread::threadInitialize())
             return false;
 
-        if (DO_STAT)
-            m_renderer->enableProfiling();
+        // if (DO_STAT)
+        //     m_renderer->enableProfiling();
 
         return true;
     }
 
     bool PreviewConsumerThread::threadShutdown()
     {
-        if (DO_STAT)
-            m_renderer->printProfilingStats();
+        // if (DO_STAT)
+        //     m_renderer->printProfilingStats();
 
         return ConsumerThread::threadShutdown();
     }
 
     bool PreviewConsumerThread::processV4L2Fd(int32_t fd, uint64_t frameNumber)
     {
-        m_renderer->render(fd);
+        // m_renderer->render(fd);
+        void *pdata = NULL;
+        NvBufferMemMap(fd, 0, NvBufferMem_Read, &pdata);
+        NvBufferMemSyncForCpu(fd, 0, &pdata);
+        cv::Mat imgbuf = cv::Mat(PREVIEW_SIZE.height(),
+                                 PREVIEW_SIZE.width(),
+                                 CV_8UC4, pdata);
+        cv::Mat display_img;
+        cvtColor(imgbuf, display_img, cv::COLOR_RGB2BGR);
+        // cvtColor(imgbuf, display_img, CV_RGB);
+        NvBufferMemUnMap(fd, 0, &pdata);
+        cv::imshow("img", display_img);
+        cv::waitKey(1);
         return true;
     }
 
@@ -332,7 +347,8 @@ namespace ArgusSamples
      *
      * @param renderer     : render handler for camera preview
      */
-    static bool execute(NvEglRenderer *renderer)
+    // static bool execute(NvEglRenderer *renderer)
+    static bool execute()
     {
         /*
             class Argus::OutputStream
@@ -461,7 +477,7 @@ namespace ArgusSamples
             ORIGINATE_ERROR("Failed to get IEGLOutputStreamSettings interface");
 
         iEglStreamSettings->setPixelFormat(PIXEL_FMT_YCbCr_420_888);
-        iEglStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
+        // iEglStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
         iEglStreamSettings->setResolution(PREVIEW_SIZE);
 
         /*
@@ -513,7 +529,9 @@ namespace ArgusSamples
 
         */
         PRODUCER_PRINT("Launching consumer thread\n");
-        PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
+        // PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
+        PreviewConsumerThread previewConsumerThread(previewStream.get());
+
         PROPAGATE_ERROR(previewConsumerThread.initialize());
         if (DO_JPEG_ENCODE)
         {
@@ -571,7 +589,7 @@ namespace ArgusSamples
         }
         /* Set the fps */
         iSourceSettings->setFrameDurationRange(Range<uint64_t>(1e9 / CAPTURE_FPS));
-        renderer->setFPS((float)CAPTURE_FPS);
+        // renderer->setFPS((float)CAPTURE_FPS);
 
         /* Submit capture requests. */
         PRODUCER_PRINT("Starting repeat capture requests.\n");
@@ -618,12 +636,12 @@ int main()
     }
 
     // Make sure to set 'export DISPLAY=:0' or you'll throw a fault and not be able to run the program
-    NvEglRenderer *renderer = NvEglRenderer::createEglRenderer("renderer0", PREVIEW_SIZE.width(),
-                                                               PREVIEW_SIZE.height(), 0, 0);
-    if (!renderer)
-        ORIGINATE_ERROR("Failed to create EGLRenderer.");
-    else
-        printf("EGLRenderer created successful\r\n");
+    // NvEglRenderer *renderer = NvEglRenderer::createEglRenderer("renderer0", PREVIEW_SIZE.width(),
+    //                                                            PREVIEW_SIZE.height(), 0, 0);
+    // if (!renderer)
+    //     ORIGINATE_ERROR("Failed to create EGLRenderer.");
+    // else
+    //     printf("EGLRenderer created successful\r\n");
 
     // Create object representing output stream to receive image frames
     UniqueObj<OutputStream> captureStream;
@@ -673,7 +691,7 @@ int main()
         ORIGINATE_ERROR("Failed to get IEGLOutputStreamSettings interface");
 
     iEglStreamSettings->setPixelFormat(PIXEL_FMT_YCbCr_420_888);
-    iEglStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
+    // iEglStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
     iEglStreamSettings->setResolution(PREVIEW_SIZE);
 
     // Based on above streamSettings, create the preview stream, and capture stream if JPEG Encode is required
@@ -695,7 +713,8 @@ int main()
     PRODUCER_PRINT("Launching consumer thread\n");
     // ArgusSamples::previewConsumerThread(previewStream.get(), renderer);
     // Must declare namespace | The actual class | Then the object name
-    ArgusSamples::PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
+    // ArgusSamples::PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
+    ArgusSamples::PreviewConsumerThread previewConsumerThread(previewStream.get());
 
     PROPAGATE_ERROR(previewConsumerThread.initialize());
     if (DO_JPEG_ENCODE)
@@ -754,7 +773,7 @@ int main()
     }
     /* Set the fps */
     iSourceSettings->setFrameDurationRange(Range<uint64_t>(1e9 / CAPTURE_FPS));
-    renderer->setFPS((float)CAPTURE_FPS);
+    // renderer->setFPS((float)CAPTURE_FPS);
 
     /* Submit capture requests. */
     PRODUCER_PRINT("Starting repeat capture requests.\n");
