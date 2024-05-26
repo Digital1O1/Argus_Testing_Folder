@@ -49,7 +49,7 @@ using namespace Argus;
 using namespace EGLStream;
 
 /* Configurations below can be overrided by cmdline */
-static uint32_t CAPTURE_TIME = 1; /* In seconds. */
+static uint32_t CAPTURE_TIME = 10; /* In seconds. */
 static int CAPTURE_FPS = 30;
 static uint32_t SENSOR_MODE = 0;
 static Size2D<uint32_t> PREVIEW_SIZE(640, 480);
@@ -145,9 +145,13 @@ namespace ArgusSamples
                Otherwise, just blit to our buffer. */
             if (m_dmabuf == -1)
             {
+                // m_dmabuf = iNativeBuffer->createNvBuffer(iEglOutputStream->getResolution(),
+                //                                          NvBufferColorFormat_YUV420,
+                //                                          NvBufferLayout_BlockLinear);
+
                 m_dmabuf = iNativeBuffer->createNvBuffer(iEglOutputStream->getResolution(),
-                                                         NvBufferColorFormat_YUV420,
-                                                         NvBufferLayout_BlockLinear);
+                                                         NvBufferColorFormat_ABGR32,
+                                                         NvBufferLayout_Pitch);
                 if (m_dmabuf == -1)
                     CONSUMER_PRINT("\tFailed to create NvBuffer\n");
             }
@@ -179,7 +183,8 @@ namespace ArgusSamples
     class PreviewConsumerThread : public ConsumerThread
     {
     public:
-        PreviewConsumerThread(OutputStream *stream, NvEglRenderer *renderer);
+        // PreviewConsumerThread(OutputStream *stream, NvEglRenderer *renderer);
+        PreviewConsumerThread(OutputStream *stream);
         ~PreviewConsumerThread();
 
     private:
@@ -187,12 +192,13 @@ namespace ArgusSamples
         bool threadShutdown();
         bool processV4L2Fd(int32_t fd, uint64_t frameNumber);
 
-        NvEglRenderer *m_renderer;
+        // NvEglRenderer *m_renderer;
     };
 
-    PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream,
-                                                 NvEglRenderer *renderer) : ConsumerThread(stream),
-                                                                            m_renderer(renderer)
+    // PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream,
+    //                                              NvEglRenderer *renderer) : ConsumerThread(stream),
+    //                                                                         m_renderer(renderer)
+    PreviewConsumerThread::PreviewConsumerThread(OutputStream *stream) : ConsumerThread(stream)
     {
     }
 
@@ -205,23 +211,34 @@ namespace ArgusSamples
         if (!ConsumerThread::threadInitialize())
             return false;
 
-        if (DO_STAT)
-            m_renderer->enableProfiling();
+        // if (DO_STAT)
+        //     m_renderer->enableProfiling();
 
         return true;
     }
 
     bool PreviewConsumerThread::threadShutdown()
     {
-        if (DO_STAT)
-            m_renderer->printProfilingStats();
+        // if (DO_STAT)
+        //     m_renderer->printProfilingStats();
 
         return ConsumerThread::threadShutdown();
     }
 
     bool PreviewConsumerThread::processV4L2Fd(int32_t fd, uint64_t frameNumber)
     {
-        m_renderer->render(fd);
+        // m_renderer->render(fd);
+        void *pdata = NULL;
+        NvBufferMemMap(fd, 0, NvBufferMem_Read, &pdata);
+        NvBufferMemSyncForCpu(fd, 0, &pdata);
+        cv::Mat imgbuf = cv::Mat(PREVIEW_SIZE.height(),
+                                 PREVIEW_SIZE.width(),
+                                 CV_8UC4, pdata);
+        cv::Mat display_img;
+        cvtColor(imgbuf, display_img, cv::COLOR_RGB2BGR);
+        NvBufferMemUnMap(fd, 0, &pdata);
+        cv::imshow("img", display_img);
+        cv::waitKey(1);
         return true;
     }
 
@@ -288,18 +305,18 @@ namespace ArgusSamples
 
     bool CaptureConsumerThread::processV4L2Fd(int32_t fd, uint64_t frameNumber)
     {
-        char filename[FILENAME_MAX];
-        sprintf(filename, "output%03u.jpg", (unsigned)frameNumber);
+        // char filename[FILENAME_MAX];
+        // sprintf(filename, "output%03u.jpg", (unsigned)frameNumber);
 
-        std::ofstream *outputFile = new std::ofstream(filename);
-        if (outputFile)
-        {
-            unsigned long size = JPEG_BUFFER_SIZE;
-            unsigned char *buffer = m_OutputBuffer;
-            m_JpegEncoder->encodeFromFd(fd, JCS_YCbCr, &buffer, size);
-            outputFile->write((char *)buffer, size);
-            delete outputFile;
-        }
+        // std::ofstream *outputFile = new std::ofstream(filename);
+        // if (outputFile)
+        // {
+        //     unsigned long size = JPEG_BUFFER_SIZE;
+        //     unsigned char *buffer = m_OutputBuffer;
+        //     m_JpegEncoder->encodeFromFd(fd, JCS_YCbCr, &buffer, size);
+        // outputFile->write((char *)buffer, size);
+        // delete outputFile;
+        // }
 
         return true;
     }
@@ -313,7 +330,8 @@ namespace ArgusSamples
      *
      * @param renderer     : render handler for camera preview
      */
-    static bool execute(NvEglRenderer *renderer)
+    // static bool execute(NvEglRenderer *renderer)
+    static bool execute()
     {
         /*
             class Argus::OutputStream
@@ -322,7 +340,7 @@ namespace ArgusSamples
                 - The operation of a stream, the source for its buffers, and the interfaces it supports depend on the StreamType of the stream.
 
             Argus::UniqueObj< T > Class Template Reference
-                - Moveable smart pointer 
+                - Moveable smart pointer
                     - Mimicks std::unique_ptr
         */
         UniqueObj<OutputStream> captureStream;
@@ -367,8 +385,8 @@ namespace ArgusSamples
                         - UniqueObj smart pointer OWNS the 'CameraProvider' object
                         - To use functionality specific to the 'ICameraProvider' interface like with the 'getCameraDevices()' function, you need to get a pointer to the 'ICameraProvider' interface
                     - Interface Useage
-                        - In many object-oriented frameworks 
-                            - Objects expose functionality through interfaces vs concrete classes 
+                        - In many object-oriented frameworks
+                            - Objects expose functionality through interfaces vs concrete classes
                             - By getting the interface pointer 'ICameraProvider' you can access the methods/member functions defined in that interface regardless of the concrete type of the object
         */
         ICameraProvider *iCameraProvider = interface_cast<ICameraProvider>(cameraProvider);
@@ -379,10 +397,10 @@ namespace ArgusSamples
         std::vector<CameraDevice *> cameraDevices;
         /*
             virtual Argus::Status Argus::ICameraProvider::getCameraDevices(std::vector<Argus::CameraDevice *> *devices) const
-                - Returns the list of camera devices that are exposed by the provider. 
-                - This includes devices that may already be in use by active CaptureSessions, 
-                    - And it's the application's responsibility to check 
-                        - Device availability 
+                - Returns the list of camera devices that are exposed by the provider.
+                - This includes devices that may already be in use by active CaptureSessions,
+                    - And it's the application's responsibility to check
+                        - Device availability
                         - Or handle any errors returned when CaptureSession creation fails due to a device already being in use.
                 - Parameters:
                     - devices – A vector that will be populated by the available devices.
@@ -454,15 +472,15 @@ namespace ArgusSamples
             ORIGINATE_ERROR("Failed to get IEGLOutputStreamSettings interface");
 
         iEglStreamSettings->setPixelFormat(PIXEL_FMT_YCbCr_420_888);
-        iEglStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
+        // iEglStreamSettings->setEGLDisplay(renderer->getEGLDisplay());
         iEglStreamSettings->setResolution(PREVIEW_SIZE);
 
         /*
             Based on above streamSettings, create the preview stream, and capture stream if JPEG Encode is required
 
             class Argus::OutputStream
-                - Object representing an output stream capable of receiving image frames from a capture. 
-                - OutputStream objects are used as the destination for image frames output from capture requests. 
+                - Object representing an output stream capable of receiving image frames from a capture.
+                - OutputStream objects are used as the destination for image frames output from capture requests.
                     - In this case it should be previewStream as the object
                 - The operation of a stream, the source for its buffers, and the interfaces it supports depend on the StreamType of the stream.
 
@@ -491,33 +509,35 @@ namespace ArgusSamples
             captureStream = (UniqueObj<OutputStream>)iCaptureSession->createOutputStream(streamSettings.get());
         }
 
-        /* 
-            Launch the FrameConsumer thread to consume frames from the OutputStream 
+        /*
+            Launch the FrameConsumer thread to consume frames from the OutputStream
 
             NvEglRenderer *renderer
-                - Argus Producer thread: Opens the Argus camera driver, 
-                    - creates two OutputStreams to output to Preview Consumer and Capture Consumer respectively, 
+                - Argus Producer thread: Opens the Argus camera driver,
+                    - creates two OutputStreams to output to Preview Consumer and Capture Consumer respectively,
                     - Then performs repeating capture requests for CAPTURE_TIME seconds before closing the producer and Argus driver.
                 - Parameters:
                     - renderer – : render handler for camera preview
-            
+
             PreviewConsumerThread
                 - Read frames from the OutputStream and render it on display.
-            
+
         */
         PRODUCER_PRINT("Launching consumer thread\n");
         /*
             PreviewConsumerThread is a subclass of ConsumerThread
                 - Both previewStream and renderer gets passed
                 - PreviewConsumerThread is a subclass of ConsumerThread
-                    - The ConsumerThread constructor will be called and initialize some variables 
+                    - The ConsumerThread constructor will be called and initialize some variables
                 - previewConsumerThread.initialize() then gets called to set up frame consumers and other needed resources for processing frames
                 - previewConsumerThread.waitRunning() waits for consumer thread to connect to the stream
                 - Once consumer thread running and connected IT THEN ENTERS THE LOOP OF ConsumerThread::threadExecute to acquire frames from the stream and process them
-                    - Loop keeps running until consumer thread is requested to shutdown 
+                    - Loop keeps running until consumer thread is requested to shutdown
                     - Typically through requestShutdown()
         */
-        PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
+        // PreviewConsumerThread previewConsumerThread(previewStream.get(), renderer);
+        PreviewConsumerThread previewConsumerThread(previewStream.get());
+
         PROPAGATE_ERROR(previewConsumerThread.initialize());
         if (DO_JPEG_ENCODE)
         {
@@ -575,7 +595,7 @@ namespace ArgusSamples
         }
         /* Set the fps */
         iSourceSettings->setFrameDurationRange(Range<uint64_t>(1e9 / CAPTURE_FPS));
-        renderer->setFPS((float)CAPTURE_FPS);
+        // renderer->setFPS((float)CAPTURE_FPS);
 
         /* Submit capture requests. */
         PRODUCER_PRINT("Starting repeat capture requests.\n");
@@ -704,19 +724,20 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    NvEglRenderer *renderer = NvEglRenderer::createEglRenderer("renderer0", PREVIEW_SIZE.width(),
-                                                               PREVIEW_SIZE.height(), 0, 0);
-    if (!renderer)
-        ORIGINATE_ERROR("Failed to create EGLRenderer.");
+    // NvEglRenderer *renderer = NvEglRenderer::createEglRenderer("renderer0", PREVIEW_SIZE.width(),
+    //                                                            PREVIEW_SIZE.height(), 0, 0);
+    // if (!renderer)
+    //     ORIGINATE_ERROR("Failed to create EGLRenderer.");
 
     /*
         Actually does stuff
 
     */
-    if (!ArgusSamples::execute(renderer))
+    // if (!ArgusSamples::execute(renderer))
+    if (!ArgusSamples::execute())
         return EXIT_FAILURE;
 
-    delete renderer;
+    // delete renderer;
 
     return EXIT_SUCCESS;
 }

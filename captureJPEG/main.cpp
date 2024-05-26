@@ -677,6 +677,7 @@ int main()
     // Create CaptureSession with first camera device and get core interface
 
     UniqueObj<CaptureSession> captureSession(iCameraProvider->createCaptureSession(cameraDevices[0]));
+    //Error generated. main.cpp, main:682 Failed to get ICaptureSession interface
     ICaptureSession *iCaptureSession = interface_cast<ICaptureSession>(captureSession);
     if (!iCaptureSession)
         ORIGINATE_ERROR("Failed to get ICaptureSession interface");
